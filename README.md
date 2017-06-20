@@ -6,7 +6,7 @@ Simple IoT Appplication for CASCON
 This is a simple application created for CASCON. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to change some hard-coded IP Addresses (and/or ports) in iot_app.sh and docker-compose.yml files.
 
 There are 4 main services in this application. 
-  * **Sensor**: This collects CPU, memory and network stats of the container itself (agreed that it's not useful). <br /> It also sends data to Kafka (as a Producer) under topic 'stats' (already created by Kafka service on boot) every 15 secs.
+  * **Sensor**: This collects CPU, memory and network stats of the container itself (agreed that it's not useful). <br /> It also sends data to Kafka (as a Producer) under topic 'stats' (already created by Kafka service on boot) every 5 secs.
   * **Aggregator**: There are three key funcationalities:
     * It starts a Kafka consumer and starts listening for incoming data under 'stats' topic
     * It also initializes the Cassandra database (creates keyspace 'stats' and table 'data')
