@@ -1,2 +1,4 @@
 kafka-python
 cassandra-driver
+requests
+elasticsearch

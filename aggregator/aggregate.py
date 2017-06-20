@@ -2,6 +2,8 @@ import json
 from kafka import KafkaConsumer
 from cassandra.cluster import Cluster
 import sys
+import time, threading
+from datetime import datetime
 
 # Connects to Kafka broker or Cassandra server and returns the connection result
 def connect_server(server, IP):
@@ -36,7 +38,7 @@ def main():
     # Create keyspace 'stats'
     session.execute("CREATE KEYSPACE IF NOT EXISTS stats WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor':1};")
     # Create table 'data'
-    session.execute("CREATE TABLE IF NOT EXISTS stats.data( data_id int PRIMARY KEY, mem_used text, mem_available text, tx_bytes bigint, rx_bytes bigint, cpu text, date text);")
+    session.execute("CREATE TABLE IF NOT EXISTS stats.data( data_id int PRIMARY KEY, mem_used text, mem_available text, tx_bytes bigint, rx_bytes bigint, cpu text, ps_cmd_output text, date text);")
   except Exception,e:
     print(str(e))
     consumer.close()
@@ -53,6 +55,7 @@ def main():
     CPU = str(data['CPU'])
     mem_used = str(data['Memory_used'])
     mem_available = str(data['Memory_available'])
+    ps_cmd_output = str(data['ps_command_output'])
     timestamp = str(data['Date'])
 
     get_max_id = session.execute("SELECT MAX(data_id) from stats.data;")[0]
@@ -64,11 +67,15 @@ def main():
         data_id = 1
  
     try: 
-      session.execute_async("""INSERT INTO stats.data ( data_id, cpu, date, mem_available, mem_used, rx_bytes, tx_bytes) VALUES (%s, %s, %s, %s, %s, %s, %s) """, (data_id, CPU, timestamp, mem_available, mem_used, rx_bytes, tx_bytes))
-    except:
+      session.execute_async("""INSERT INTO stats.data ( data_id, cpu, date, mem_available, mem_used, rx_bytes, tx_bytes, ps_cmd_output) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) """, (data_id, CPU, timestamp, mem_available, mem_used, rx_bytes, tx_bytes, ps_cmd_output))
+    except Exception,e:
       print("Could not insert data to table...")
+      print(str(e))
     else:
       print("Successfully stored data in Cassandra database!")
+
+    sys.stdout.flush()
+
     
   print("Shutting down Kafka and Cassandra sessions...")
 

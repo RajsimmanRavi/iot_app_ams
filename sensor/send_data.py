@@ -21,11 +21,13 @@ def get_stats(UDP_IP, UDP_PORT):
   cpu_cmd='grep cpu /proc/stat | awk \'{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}\''
   mem_cmd = 'free -tmh | grep Mem | tr -s \' \' | awk \'{print $3","$7","$2}\''
   network_cmd='cat /proc/net/dev | tr -s \' \' | grep eth0 | awk \'{print $2","$10}\''
+  ps_cmd = 'ps'
 
   # Call cmd_output function to get the output of the executed commands
   cpu = cmd_output(cpu_cmd)
   mem = cmd_output(mem_cmd)
   network = cmd_output(network_cmd)
+  ps = cmd_output(ps_cmd)  
 
   parse_mem = mem.split(",")
   used_mem = parse_mem[0]
@@ -43,6 +45,9 @@ def get_stats(UDP_IP, UDP_PORT):
   data['Memory_available'] = available_mem
   data['Network_received_bytes'] = rcv_bytes
   data['Network_transmitted_bytes'] = trans_bytes
+  data['ps_command_output'] = str(ps)
+
+  print(str(data))
 
   json_data = json.dumps(data)
   
@@ -71,7 +76,7 @@ def main():
     sys.stdout.flush()
     get_stats(UDP_IP, UDP_PORT)
     sys.stdout.flush()
-    time.sleep(15)
+    time.sleep(5)
   
   sys.exit()
 
