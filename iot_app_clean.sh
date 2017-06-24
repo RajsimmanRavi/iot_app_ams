@@ -10,9 +10,9 @@ docker service rm iot_sensor
 
 sleep 1
 
-echo -e "Removing service iot_agg"
+echo -e "Removing service iot_edge_processor"
 
-docker service rm iot_agg
+docker service rm iot_edge_processor
 
 sleep 1
 
