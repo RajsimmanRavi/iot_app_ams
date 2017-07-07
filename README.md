@@ -7,7 +7,7 @@ This is a simple application created for CASCON. It resembles an architecture th
 
 There are 4 main services in this application. 
   * **Sensor**: This collects CPU, memory and network stats of the container itself (agreed that it's not useful). <br /> It also sends data to Kafka (as a Producer) under topic 'stats' (already created by Kafka service on boot) every 5 secs.
-  * **Aggregator**: There are three key funcationalities:
+  * **Stream Processor**: There are three key funcationalities:
     * It starts a Kafka consumer and starts listening for incoming data under 'stats' topic
     * It also initializes the Cassandra database (creates keyspace 'stats' and table 'data')
     * Any incoming data will be automatically sent to Cassandra database
@@ -24,7 +24,7 @@ As you may have guessed, **clean_up.sh** removes all the services.
  
 The aggregator and sensor docker images can be found in the docker hub links (shown below):
   * Sensor image: https://hub.docker.com/r/perplexedgamer/sensor/
-  * Aggregator image: https://hub.docker.com/r/perplexedgamer/aggregator/
+  * Stream Processor image: https://hub.docker.com/r/perplexedgamer/aggregator/
 
 You can find the details of those images on the docker-hub description. 
 
