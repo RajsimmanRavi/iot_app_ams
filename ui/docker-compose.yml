@@ -1,0 +1,9 @@
+version: "3"
+services:
+  UI:
+    image: python:2.7-slim
+      deploy:
+        placement:
+          constraints:
+           - node.hostname == IoT-app-controller
+
