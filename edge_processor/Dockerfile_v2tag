@@ -1,0 +1,9 @@
+FROM python:2.7-slim
+
+WORKDIR /usr/src/aggregator
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT [ "python", "./aggregate.py" ]
