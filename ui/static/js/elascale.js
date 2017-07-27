@@ -1,7 +1,6 @@
 /* Bunch of constants */
 var config_params = ["cpu_up_lim", "mem_up_lim", "cpu_down_lim", "up_step", "down_step", "max_replica", "min_replica", "auto_scale"];
 
-var config_url = "ws://localhost:8888/config";
 
 /* 
     Function to get only the different values between the default current values and newly insterted values.
@@ -14,16 +13,12 @@ function get_diff(micro_or_macro, service, curr_list, new_list){
 
     var diff_dict = {};
 
-    if (micro_or_macro == "micro"){
+    //Differentiate micro from macro
+    diff_dict["service_type"] = micro_or_macro;
 
-        // Add ID to dict such that we know which service is chosen
-        diff_dict["micro_service"] = service;
+    //Add service 
+    diff_dict["service"] = service;
 
-    } else {
-
-	diff_dict["macro_service"] = service;
-    }
-  
     for (var i = 0; i < curr_list.length; i++){
     
 	// If new value is not empty string
@@ -32,8 +27,8 @@ function get_diff(micro_or_macro, service, curr_list, new_list){
 	    // something changed
 	    if(new_list[i] != curr_list[i]){
 	        
-                // The key will be the string of the config_param index 
-	        diff_dict[config_params[i]] = new_list[i];
+                //The parameter string (eg. cpu_up_lim) that will be changed will be the key
+                diff_dict[config_params[i]] = new_list[i];
 	
             }
 	
@@ -78,8 +73,10 @@ function get_vals_list(submit_id, default_or_new){
     Function that is called when SUBMIT button is pressed on micro (or macro)-services configuration page 
 
 */
-function submit_change(service_type, self_id){
-
+function submit_change(service_type, self_id, ip_addr){
+    
+    var config_url = "ws://"+ip_addr+":8888/config";
+    
     //Get the current default values of the micro-service config parameters
     var default_list = get_vals_list(self_id, "default");
 
@@ -98,6 +95,8 @@ function submit_change(service_type, self_id){
     };
 
     ws.onmessage = function (evt) {
-        alert(evt.data);
+        var ret_data = evt.data;
+
+        if(confirm(ret_data)){window.location.reload();}
     };
 }
