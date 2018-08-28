@@ -76,7 +76,7 @@ def stream_process(KAFKA_IP, CASS_IP):
     # Create keyspace 'stats'
     session.execute("CREATE KEYSPACE IF NOT EXISTS stats WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor':1};")
     # Create table 'data'
-    session.execute("CREATE TABLE IF NOT EXISTS stats.data( data_id int PRIMARY KEY, mac text, company text );")
+    session.execute("CREATE TABLE IF NOT EXISTS stats.data( data_id int PRIMARY KEY, time text, mac text, signal text );")
   except Exception as e:
     print(str(e))
     consumer.close()
@@ -88,15 +88,17 @@ def stream_process(KAFKA_IP, CASS_IP):
   proc_list = []
 
   for msg in consumer:
+    #data = json.loads(msg.value.decode('utf-8'))
     data = json.loads(msg.value.decode('utf-8'))
     pkt_data = parse_data(data)
 
-    split_data = pkt_data.split("Company: ")
+    split_data = pkt_data.split(",")
 
-    mac = stringify(split_data[0].rstrip())
-    company = stringify(split_data[1].rstrip())
+    time = stringify(split_data[0].rstrip())
+    mac = stringify(split_data[1.rstrip())
+    strength = stringify(split_data[2].rstrip())
 
-    print("mac: %s company: %s" %(mac,company))
+    print("time: %s mac: %s strength: %s" %(time,mac,strength))
 
     query_max_id = "SELECT MAX(data_id) from stats.data;"
     get_max_id = execute_query(session, query_max_id)
