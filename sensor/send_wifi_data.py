@@ -7,11 +7,10 @@ import base64
 import socket
 from datetime import datetime
 import subprocess as sp
-from scapy.all import *
 from kafka import KafkaProducer
 from util import *
+from random import randint
 
-# Fetches stats and sends it to appropriate endpoint in JSON format (kinda)
 def send_data(stream_dict):
 
   UDP_IP = os.environ["KAFKA_IP"]
@@ -21,12 +20,12 @@ def send_data(stream_dict):
 
   print(json_data)
 
-  """
+
   # send data to Kafka consumer
   try:
     kafka_server = UDP_IP+":"+str(UDP_PORT)
     producer = KafkaProducer(bootstrap_servers=kafka_server)
-    producer.send('stats', json_data.encode('utf8'))
+    producer.send('wifi', json_data.encode('utf8'))
     producer.flush()
     producer.close()
   except Exception as e:
@@ -35,37 +34,36 @@ def send_data(stream_dict):
     pass
   else:
     print("Successfully transmitted data!")
-  """
 
 def main():
 
-  os.environ["KAFKA_IP"] = "10.2.1.11"
-  os.environ["KAFKA_PORT"] = "9092"
-  #directory = "/usr/src/sorted_data/"
-  directory = "/home/ubuntu/iot_app_cascon/sensor/sorted_data/"
+    directory = "/usr/src/send_data/sorted_data/"
+    #directory = "/home/ubuntu/iot_app_cascon/sensor/sorted_data/"
+    #os.environ["KAFKA_IP"] = "10.2.1.11"
+    #os.environ["KAFKA_PORT"] = "9092"
 
-  df_data = read_dir(directory)
+    df_data = read_dir(directory)
 
-  for df in df_data:
-      for index, row in df.iterrows():
-          stream_dict = {}
-          stream_dict['time_stamp'] = index.strftime("%Y-%m-%d %H:%M:%S")
-          stream_dict['mac'] = row['mac']
-          stream_dict['strength'] = row['strength']
-          send_data(stream_dict)
-  """
-  while 1:
-    timestamp = datetime.now().strftime("%y-%m-%d %H:%M:%S")
-    print("Starting data collection and transmission for: "+str(timestamp))
-    sys.stdout.flush()
+    while 1:
+        for df in df_data:
+            counter = 1
+            randq = randint(100,125) # random buffer size for each file
+            print("random buffer size: %s" % str(randq))
+            for index, row in df.iterrows():
+                stream_dict = {}
+                stream_dict['time_stamp'] = str(index.strftime("%Y-%m-%d %H:%M:%S"))
+                stream_dict['mac'] = str(row['mac'])
+                stream_dict['strength'] = str(row['strength'])
+                stream_dict['onion'] = str(row['onion'])
+                send_data(stream_dict)
+                counter += 1
 
-    util.read_file(directory)
+                if counter % randq == 0:
+                    rand_sleep = randint(5,15)
+                    print("Time to sleep for %s seconds" % str(rand_sleep))
+                    time.sleep(rand_sleep)
+    sys.exit()
 
-    sys.stdout.flush()
-    time.sleep(5)
-
-  sys.exit()
-  """
 if __name__=="__main__":
   main()
 

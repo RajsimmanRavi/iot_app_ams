@@ -1,2 +1,2 @@
 kafka-python
-scapy-python3
+pandas
