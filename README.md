@@ -15,9 +15,13 @@ There are 4 main services in this application.
   * **MySQL**: This service simply brings up the MySQL database.
   
 ### Instructions for deployment ###
-The neatness of this application is that it requires minimal pre-requisites (as long as it is deployed on Docker Swarm master). Once you've made the necessary changes to iot_app_compose.yml, you can deploy the application as a stack: ``` sudo docker deploy -c iot_app_compose.yml iot ```
+The neatness of this application is that it requires minimal pre-requisites (as long as it is deployed on Docker Swarm master). Once you've made the necessary changes to iot_app_compose.yml, you can deploy the application as a stack: 
 
-You can remove the application stack using the following command: ``` sudo docker stack rm iot ```
+``` sudo docker deploy -c iot_app_compose.yml iot ```
+
+You can remove the application stack using the following command: 
+
+``` sudo docker stack rm iot ```
  
 The aggregator and sensor docker images can be found in the docker hub links (shown below):
   * Sensor image: https://hub.docker.com/r/perplexedgamer/sensor/
