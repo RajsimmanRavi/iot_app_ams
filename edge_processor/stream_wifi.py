@@ -7,7 +7,7 @@ def stream_process(KAFKA_IP, MYSQL_IP):
 
     consumer = connect_server("Kafka", KAFKA_IP)
     print("Connected to Kafka Broker!")
-    conn = mysql_connect("10.2.1.11","root","elascale","wifi")
+    conn = mysql_connect(MYSQL_IP,"root","elascale","wifi")
     print("Connected to MySQL Database!")
 
     # Initialize database tables
@@ -43,8 +43,8 @@ def stream_process(KAFKA_IP, MYSQL_IP):
     sys.exit()
 
 def main():
-  os.environ["KAFKA_IP"] = "10.2.1.11"
-  os.environ["MYSQL_IP"] = "10.2.1.11"
+  #os.environ["KAFKA_IP"] = "10.2.1.11"
+  #os.environ["MYSQL_IP"] = "10.2.1.11"
 
   stream_process(os.environ["KAFKA_IP"], os.environ["MYSQL_IP"])
 

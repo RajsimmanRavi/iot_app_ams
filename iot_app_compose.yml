@@ -50,10 +50,10 @@ services:
          protocol: tcp
          mode: host   
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 10.2.1.11
+      KAFKA_ADVERTISED_HOST_NAME: 10.2.1.15
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_CREATE_TOPICS: "wifi:1:1"
-      KAFKA_ZOOKEEPER_CONNECT: 10.2.1.11:2181
+      KAFKA_ZOOKEEPER_CONNECT: 10.2.1.15:2181
   sensor:
     image: perplexedgamer/sensor:v5
     #image: sensor:v5
@@ -62,7 +62,7 @@ services:
         constraints:
           - node.labels.loc == agg-sensor
     environment:
-      KAFKA_IP: 10.2.1.11
+      KAFKA_IP: 10.2.1.15
       KAFKA_PORT: 9092
   edge:
     image: perplexedgamer/edge_processor:v8
@@ -75,5 +75,5 @@ services:
         condition: on-failure
         window: 120s
     environment:
-      KAFKA_IP: 10.2.1.11
-      MYSQL_IP: 10.2.1.11
+      KAFKA_IP: 10.2.1.15
+      MYSQL_IP: 10.2.1.12
