@@ -1,4 +1,4 @@
-#IoT Appplication for Autonomic Management System
+IoT Appplication for Autonomic Management System
 ----------------------------------
 
 This is an application creeated for testing the Autonomic Management System (AMS) on SAVI Testbed. For more information, please refer to this: https://github.com/RajsimmanRavi/Elascale_secure. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to edit iot_app_compose.yml to resemble your deployment (either 1 machine or distributed platform). 
