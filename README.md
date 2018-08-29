@@ -1,26 +1,23 @@
-# iot_app_cascon
-
-Simple IoT Appplication for CASCON
+#IoT Appplication for Autonomic Management System
 ----------------------------------
 
-This is a simple application created for CASCON. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to change some hard-coded IP Addresses (and/or ports) in iot_app.sh and docker-compose.yml files.
+This is an application creeated for testing the Autonomic Management System (AMS) on SAVI Testbed. For more information, please refer to this: https://github.com/RajsimmanRavi/Elascale_secure. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to edit iot_app_compose.yml to resemble your deployment (either 1 machine or distributed platform). 
 
 There are 4 main services in this application. 
-  * **Sensor**: This collects CPU, memory and network stats of the container itself (agreed that it's not useful). <br /> It also sends data to Kafka (as a Producer) under topic 'stats' (already created by Kafka service on boot) every 5 secs.
+  * **Sensor**: We collected some real environment WiFi capture during a festival. We processed the PCAP files and removed any sensitive material and kept only processed WiFi Probe request data. This service basically replays the stream in a randomized manner. It produces data to Kafka under topic 'wifi' (already created by Kafka service on boot).
   * **Stream Processor**: There are three key funcationalities:
-    * It starts a Kafka consumer and starts listening for incoming data under 'stats' topic
-    * It also initializes the Cassandra database (creates keyspace 'stats' and table 'data')
-    * Any incoming data will be automatically sent to Cassandra database
+    * It starts a Kafka consumer and starts listening for incoming data under 'wifi' topic
+    * It also initializes the MySQL database (creates keyspace 'wifi' and table 'data')
+    * Any incoming data will be automatically sent to MySQL database
+    * It also performs a lookup of MAC address and inserts the manufacturer info to MySQL database
+    * Furthermore, it can be utilized to do heavier processing such as crowd monitoring/tracking using probe request data (sent by the sensor)
   * **Kafka (and Zookeeper)**: This service brings the Zookeeper and Kafka broker up and running. It also creates the topic 'stats' on start up.
-  * **Cassandra**: This service simply brings up the Cassandra database.
+  * **MySQL**: This service simply brings up the MySQL database.
   
 ### Instructions for deployment ###
-The neatness of this application is that it requires minimal pre-requisites. As long as there is a docker swarm with three nodes, this application can be brought up with minimal configuration <br />
-**However**, you have to make some changes to **docker-compose.yml** and **iot_app.sh** files. Pay particular attention to **IP addresses, ports, and node labels** and make necessary changes. <br />
-Hence, you mainly need the following files: **docker-compose.yml, iot_app.sh and clean.sh**
+The neatness of this application is that it requires minimal pre-requisites (as long as it is deployed on Docker Swarm master). Once you've made the necessary changes to iot_app_compose.yml, you can deploy the application as a stack: ``` sudo docker deploy -c iot_app_compose.yml iot ```
 
-Once those changes have been made, you simply have to call the **./iot_app.sh**, and it will bring all the services.<br />
-As you may have guessed, **clean_up.sh** removes all the services.
+You can remove the application stack using the following command: ``` sudo docker stack rm iot ```
  
 The aggregator and sensor docker images can be found in the docker hub links (shown below):
   * Sensor image: https://hub.docker.com/r/perplexedgamer/sensor/
@@ -33,5 +30,4 @@ Note: Make sure you save the image before exit. Otherwise all changes will be lo
 
 I've also included the Dockerfiles (for both of them). You don't need these files to get the images, but they merely serve for reference purposes.
 
-Any questions/concerns/issues/feedback is greatly appreciated! Contact: rajsimmanr@savinetwork.ca
-
+Any questions/concerns/issues/feedback is greatly appreciated! Contact: rajsimmanr@gmail.com
