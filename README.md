@@ -1,7 +1,7 @@
 IoT Appplication for Autonomic Management System
 ----------------------------------
 
-This is an application creeated for testing the Autonomic Management System (AMS) on SAVI Testbed. For more information, please refer to this: https://github.com/RajsimmanRavi/Elascale_secure. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to edit iot_app_compose.yml to resemble your deployment (either 1 machine or distributed platform). 
+This is an application created for testing the Autonomic Management System (AMS) on SAVI Testbed. For more information, please refer to this: https://github.com/RajsimmanRavi/Elascale_secure. It resembles an architecture that can be utilized in IoT environments. Docker images have been used for this application. Hence, you don't need to build anything from scratch. However, you need to edit iot_app_compose.yml to resemble your deployment (either 1 machine or distributed platform). 
 
 There are 4 main services in this application. 
   * **Sensor**: We collected some real environment WiFi capture during a festival. We processed the PCAP files and removed any sensitive material and kept only processed WiFi Probe request data. This service basically replays the stream in a randomized manner. It produces data to Kafka under topic 'wifi' (already created by Kafka service on boot).
