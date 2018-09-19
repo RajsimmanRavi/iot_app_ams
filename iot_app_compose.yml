@@ -56,7 +56,6 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: 10.2.1.15:2181
   sensor:
     image: perplexedgamer/sensor:v5
-    #image: sensor:v5
     deploy:  
       placement:
         constraints:
@@ -66,7 +65,6 @@ services:
       KAFKA_PORT: 9092
   edge:
     image: perplexedgamer/edge_processor:v8
-    #image: edge_processor:v8
     deploy:
       placement:
         constraints:
