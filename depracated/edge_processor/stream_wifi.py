@@ -2,6 +2,33 @@ import os
 import json
 import sys
 from util import *
+import requests
+
+def consume():
+    headers = {'Content-Type': 'application/vnd.kafka.v1+json', 'Accept': 'application/vnd.kafka.v1+json'}
+    # Create a consumer
+    r = requests.post("http://10.2.1.13:8082/consumers/wifi_streamers", json={'name': 'wifi_streamer_instance', 'format': 'json', 'auto.offset.reset': 'smallest'}, headers=headers)
+    print(r.status_code, r.reason)
+
+
+    headers = {'Content-Type': 'application/vnd.kafka.v1+json', 'Accept': 'application/vnd.kafka.v1+json'}
+    # Subscribe the consumer
+    r = requests.post("http://10.2.1.13:8082/consumers/wifi_streamers/instances/wifi_streamer_instance/subscription", json={'topics': 'wifi'}, headers=headers)
+    print(r.status_code, r.reason)
+    #consumers/my_json_consumer/instances/my_consumer_instance/subscription
+
+    headers = {'Content-Type': 'application/vnd.kafka.v1+json'}
+    # Get some records
+    r = requests.get("http://10.2.1.13:8082/consumers/wifi_streamers/instances/wifi_streamer_instance/records", headers=headers)
+    print(r.status_code, r.reason)
+
+
+    headers = {'Content-Type': 'application/vnd.kafka.v1+json'}
+    # Close consumer and delete stuff
+    r = requests.delete("http://10.2.1.13:8082/consumers/wifi_streamers/instances/wifi_streamer_instance", headers=headers)
+    print(r.status_code, r.reason)
+
+
 
 def stream_process(KAFKA_IP, MYSQL_IP):
 
@@ -43,10 +70,11 @@ def stream_process(KAFKA_IP, MYSQL_IP):
     sys.exit()
 
 def main():
-  #os.environ["KAFKA_IP"] = "10.2.1.11"
-  #os.environ["MYSQL_IP"] = "10.2.1.11"
-
-  stream_process(os.environ["KAFKA_IP"], os.environ["MYSQL_IP"])
+  # If testing at host, run this command before installing pip packages on host environment: sudo apt-get install libmysqlclient-dev
+  #os.environ["KAFKA_IP"] = "10.2.1.13"
+  #os.environ["MYSQL_IP"] = "10.2.1.12"
+  #stream_process(os.environ["KAFKA_IP"], os.environ["MYSQL_IP"])
+  consume()
 
   sys.exit()
 
