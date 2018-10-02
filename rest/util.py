@@ -107,7 +107,7 @@ def execute_mysql_query(conn,cmd):
             print("Successfully executed query: %s on MySQL database!" % cmd)
             result = "Complete"
 
-def insert_mysql_query(conn,data):
+def insert_mysql_data(conn,data):
 
     try:
         conn["cursor"].execute("""INSERT INTO wifi.data (time_stamp,onion,mac,strength,company) VALUES (%s,%s,%s,%s,%s)""", (data["time_stamp"],data["onion"],data["mac"],data["strength"],data["company"]))
@@ -118,7 +118,18 @@ def insert_mysql_query(conn,data):
     else:
         print("Done")
 
-def fetch_mysql_query(conn,cmd):
+def insert_mysql_stats(conn,data):
+
+    try:
+        conn["cursor"].execute("""INSERT INTO wifi.stats (time_stamp,transfer_rate,latency,length) VALUES (%s,%s,%s,%s)""", (data["time_stamp"],data["transfer_rate"],data["latency"],data["length"]))
+        conn["db"].commit()
+    except Exception as e:
+        print("Error occurred while executing... %s" % e)
+        conn["db"].rollback
+    else:
+        print("Done")
+
+def fetch_mysql_data(conn,cmd):
 
     try:
         conn["cursor"].execute(cmd)
@@ -131,4 +142,27 @@ def fetch_mysql_query(conn,cmd):
         return_dict = {}
         for x,y in rows:
             return_dict[x] = str(y)
+        return return_dict
+
+def fetch_mysql_stats(conn,cmd):
+    return_dict = {}
+    try:
+        conn = MySQLdb.connect(host="10.2.1.12",
+            user="root",
+            passwd="elascale",
+            db="wifi",
+            cursorclass=MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor()
+        cursor.execute(cmd)
+    except Exception as e:
+        print("Error occurred while executing... %s" % e)
+    else:
+        print("Done")
+        rows = cursor.fetchall()
+        for row in rows:
+            return_dict[row["id"]] = str(row["time_stamp"])+","+str(row["transfer_rate"])+","+str(row["latency"])+","+str(row["length"])
+
+        print(return_dict)
+        cursor.close()
+        conn.close()
         return return_dict

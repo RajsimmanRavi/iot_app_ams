@@ -8,62 +8,69 @@ import socket
 from datetime import datetime
 import subprocess as sp
 from util import *
-from random import randint
+from random import randint,choice
+import math
+from pytz import timezone
 
-import requests
-
-def post_request(json_data):
-  REST_API_IP = os.environ["REST_API_IP"]
-  REST_API_PORT = os.environ["REST_API_PORT"]
-
-  sent = False
-  while (sent == False):
-    try:
-      r = requests.post("http://"+str(REST_API_IP)+":"+str(REST_API_PORT)+"/data", data=json_data)
-    except requests.exceptions.RequestException as e:
-      print("Error caused: %s. Trying again..." % str(e))
-      sent = False
-    else:
-      print("Successfully sent! Code: %s. Reason: %s" %(str(r.status_code),str(r.reason)))
-      sent = True
-
-def send_data(stream_dict):
-
-  json_data = json.dumps(stream_dict)
-  headers = {'Content-Type': 'application/json'}
-  print(json_data)
-
-  post_request(json_data)
 
 def main():
 
-    directory = "/usr/src/send_data/sorted_data/"
-    #directory = "/home/ubuntu/iot_app_cascon/sensor/sorted_data/"
-    #os.environ["REST_API_IP"] = "10.2.1.13"
-    #os.environ["REST_API_PORT"] = "6969"
+    fmt = '%Y-%m-%d %H:%M'
+    eastern = timezone('US/Eastern')
 
-    df_data = read_dir(directory)
+    directory = "/usr/src/send_data/" # Uncomment this line when deploying it as Docker image
 
+    """
+    # Unblock the following 3 lines when testing the code in-house
+    directory = "/home/ubuntu/iot_app_cascon/sensor/"
+    os.environ["REST_API_IP"] = "10.2.1.13"
+    os.environ["REST_API_PORT"] = "6969"
+    """
+
+    stats_file = directory+"stats.csv" # file to hold stats
+
+    df_data = read_dir(directory+"sorted_data/")
+
+    # Track time_stamp. Need this to compare inside loop whether we passed 30 secs or not
+    start_loop = time.time()
     while 1:
         for df in df_data:
-            counter = 1
-            randq = randint(100,125) # random buffer size for each file
-            print("random buffer size: %s" % str(randq))
             for index, row in df.iterrows():
                 stream_dict = {}
                 stream_dict['time_stamp'] = str(index.strftime("%Y-%m-%d %H:%M:%S"))
                 stream_dict['mac'] = str(row['mac'])
                 stream_dict['strength'] = str(row['strength'])
                 stream_dict['onion'] = str(row['onion'])
-                send_data(stream_dict)
-                counter += 1
 
-                if counter % randq == 0:
-                    rand_sleep = randint(5,15)
-                    print("Time to sleep for %s seconds" % str(rand_sleep))
-                    time.sleep(rand_sleep)
+                length = (sys.getsizeof(stream_dict))*8
+
+                # Measure time elapsed during transfer
+                start = time.time()
+                send_data("data",stream_dict)
+                end = time.time()
+
+                elapsed = end - start
+
+                transfer_rate = length/elapsed
+
+                msg_transfer_rate = str(math.ceil(transfer_rate))
+                msg_latency = str(round(elapsed,4))
+                msg_length = str(length)
+
+                # Timestamp for entering into csv
+                time_stamp = datetime.datetime.now(eastern).strftime(fmt)
+                stats = time_stamp+","+msg_transfer_rate+","+msg_latency+","+msg_length+"\n"
+
+                end_loop = time.time()
+
+                if int(end_loop - start_loop) >= 30:
+                    check_delete_file(stats_file)
+                    write_to_file(stats, stats_file)
+                    #time.sleep(5)
+                    start_loop = time.time() # Reset the start_time
+
+
     sys.exit()
 
 if __name__=="__main__":
   main()
-
