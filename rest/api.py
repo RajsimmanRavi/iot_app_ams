@@ -6,10 +6,11 @@ import json
 from util import *
 import os
 
-
+"""
 # Unblock this if you're testing it in-house
 os.environ["MYSQL_IP"] = "10.2.1.12"
 os.environ["REST_API_PORT"] = "6969"
+"""
 
 MYSQL_IP = os.environ["MYSQL_IP"]
 REST_API_PORT = os.environ["REST_API_PORT"]

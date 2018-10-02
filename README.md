@@ -8,7 +8,7 @@ There are 4 main services in this application.
   * **REST API**: There are three key funcationalities:
     * Initializes the MySQL database (creates keyspace 'wifi' and table 'data')
     * Listens on port **6969** for any incoming data (using POST). It will parse the data and insert it into MySQL database
-    * Can also provide top manufacturers (based on MAC addresses of inserted data in database). You can do a GET request: /get_data
+    * Can also provide top manufacturers (based on MAC addresses of inserted data in database). You can do a GET request: /data
   * **Database**: This service simply brings up the MySQL database (Repuires port **3306**)
   
 ### Instructions for deployment ###
