@@ -31,6 +31,9 @@ def main():
 
     df_data = read_dir(directory+"sorted_data/")
 
+    # Hold all the msg transfer rates. Then, take average and send it to stats.csv
+    transfer_rates = []
+
     # Track time_stamp. Need this to compare inside loop whether we passed 30 secs or not
     start_loop = time.time()
     while 1:
@@ -51,22 +54,26 @@ def main():
 
                 elapsed = end - start
 
-                transfer_rate = length/elapsed
-
-                msg_transfer_rate = str(math.ceil(transfer_rate))
-                msg_latency = str(round(elapsed,4))
-                msg_length = str(length)
-
-                # Timestamp for entering into csv
-                time_stamp = datetime.datetime.now(eastern).strftime(fmt)
-                stats = time_stamp+","+msg_transfer_rate+","+msg_latency+","+msg_length+"\n"
+                curr_transfer_rate = length/elapsed
+                transfer_rates.append(curr_transfer_rate)
 
                 end_loop = time.time()
 
+                # Record every 30 seconds
                 if int(end_loop - start_loop) >= 30:
+
+                    avg_transfer_rate = sum(transfer_rates)/float(len(transfer_rates))
+                    msg_transfer_rate = str(math.ceil(avg_transfer_rate))
+                    #msg_latency = str(round(elapsed,4)) Not adding anymore, depracated
+
+                    # Timestamp for entering into csv
+                    time_stamp = datetime.datetime.now(eastern).strftime(fmt)
+                    stats = time_stamp+","+msg_transfer_rate+"\n"
+
                     check_delete_file(stats_file)
                     write_to_file(stats, stats_file)
                     #time.sleep(5)
+                    transfer_rates = [] # Reset/empty the list
                     start_loop = time.time() # Reset the start_time
 
 

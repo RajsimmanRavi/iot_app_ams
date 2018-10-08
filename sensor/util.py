@@ -14,7 +14,7 @@ def check_delete_file(f_name):
     header = "Timestamp,Transfer Rate,Latency,Length\n"
 
     # This should hold olny ~50 lines in the file (enough for 20 mins of testing)
-    if os.access(f_name, os.R_OK) and os.path.getsize(f_name) > 2000:
+    if os.access(f_name, os.R_OK) and os.path.getsize(f_name) > 10000:
         os.remove(f_name)
 
     if not os.access(f_name, os.R_OK):
