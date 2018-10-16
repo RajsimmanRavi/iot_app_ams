@@ -31,8 +31,11 @@ def main():
 
     df_data = read_dir(directory+"sorted_data/")
 
-    # Hold all the msg transfer rates. Then, take average and send it to stats.csv
-    transfer_rates = []
+    # Hold all the msg transfer rates. Then, take average and send it to stats.csv (Depracated)
+    #transfer_rates = []
+    latencies = []
+
+    msg_counter = 0 # counts number of msges sent
 
     # Track time_stamp. Need this to compare inside loop whether we passed 30 secs or not
     start_loop = time.time()
@@ -54,27 +57,36 @@ def main():
 
                 elapsed = end - start
 
-                curr_transfer_rate = length/elapsed
-                transfer_rates.append(curr_transfer_rate)
+                #curr_transfer_rate = length/elapsed # (Depracated)
+                #transfer_rates.append(curr_transfer_rate) # (Depracated)
+                latencies.append(elapsed)
 
                 end_loop = time.time()
-
+                duration = end_loop - start_loop
                 # Record every 30 seconds
-                if int(end_loop - start_loop) >= 30:
+                if int(duration) >= 30:
 
-                    avg_transfer_rate = sum(transfer_rates)/float(len(transfer_rates))
-                    msg_transfer_rate = str(math.ceil(avg_transfer_rate))
-                    #msg_latency = str(round(elapsed,4)) Not adding anymore, depracated
+                    #avg_transfer_rate = sum(transfer_rates)/float(len(transfer_rates)) # ALG did not like this
+                    #msg_transfer_rate = str(math.ceil(avg_transfer_rate))              # ALG did not like this
+
+                    avg_latency = sum(latencies)/float(len(latencies))
+                    msg_latency = str(round(avg_latency,4))                                 # ALG prefers this
+                    msg_per_sec = str(math.ceil((msg_counter/duration)))                       # ALG prefers this
 
                     # Timestamp for entering into csv
                     time_stamp = datetime.datetime.now(eastern).strftime(fmt)
-                    stats = time_stamp+","+msg_transfer_rate+"\n"
+                    stats = time_stamp+","+msg_per_sec+","+msg_latency+"\n"
 
                     check_delete_file(stats_file)
                     write_to_file(stats, stats_file)
                     #time.sleep(5)
                     transfer_rates = [] # Reset/empty the list
                     start_loop = time.time() # Reset the start_time
+
+                    msg_counter = 0
+
+                else:
+                    msg_counter += 1
 
 
     sys.exit()

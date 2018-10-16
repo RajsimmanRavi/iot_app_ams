@@ -11,7 +11,7 @@ import time
 
 def check_delete_file(f_name):
     # When creating new files
-    header = "Timestamp,Transfer Rate,Latency,Length\n"
+    header = "Timestamp,Message Transfer Rate,Latency,Length\n"
 
     # This should hold olny ~50 lines in the file (enough for 20 mins of testing)
     if os.access(f_name, os.R_OK) and os.path.getsize(f_name) > 10000:
