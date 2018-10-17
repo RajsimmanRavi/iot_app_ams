@@ -11,14 +11,12 @@ import time
 
 def check_delete_file(f_name):
     # When creating new files
-    header = "Timestamp,Message Transfer Rate,Latency,Length\n"
+    header = "Timestamp,Messages_per_sec,Latency, Message Transfer Rate\n"
 
-    # This should hold olny ~50 lines in the file (enough for 20 mins of testing)
-    if os.access(f_name, os.R_OK) and os.path.getsize(f_name) > 10000:
+    if os.access(f_name, os.R_OK):
         os.remove(f_name)
 
-    if not os.access(f_name, os.R_OK):
-        write_to_file(header, f_name)
+    write_to_file(header, f_name)
 
 def read_dir(directory):
     df_data = []
@@ -76,16 +74,18 @@ def post_request(url,json_data):
       time.sleep(2)
       sent = False
     else:
-      print("Successfully sent! Code: %s. Reason: %s" %(str(r.status_code),str(r.reason)))
+      #print("Successfully sent! Code: %s. Reason: %s. Elapsed time: %s Length: %s" %(str(r.status_code),str(r.reason),str(r.elapsed.total_seconds()),str(len((json_data).encode('utf-8'))*8)))
       sent = True
+      return r.elapsed.total_seconds()
 
 def send_data(url, stream_dict):
 
   json_data = json.dumps(stream_dict)
   headers = {'Content-Type': 'application/json'}
-  print(json_data)
+  #print(json_data)
 
-  post_request(url, json_data)
+  elapsed_time = post_request(url, json_data)
+  return elapsed_time
 
 def write_to_file(stats, f_name):
     """
