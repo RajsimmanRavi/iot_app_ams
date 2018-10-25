@@ -62,13 +62,16 @@ def read_file_randomly(f_name):
     return df
 
 def post_request(url,json_data):
-  REST_API_IP = os.environ["REST_API_IP"]
+  REST_API_IPS = os.environ["REST_API_IPS"]
   REST_API_PORT = os.environ["REST_API_PORT"]
+
+  IPS = REST_API_IPS.split(",")
+  DEST_IP = random.choice(IPS)
 
   sent = False
   while (sent == False):
     try:
-      r = requests.post("http://"+str(REST_API_IP)+":"+str(REST_API_PORT)+"/"+url, data=json_data)
+      r = requests.post("http://"+str(DEST_IP)+":"+str(REST_API_PORT)+"/"+url, data=json_data)
     except requests.exceptions.RequestException as e:
       print("Error caused: %s. Trying again after few seconds..." % str(e))
       time.sleep(2)

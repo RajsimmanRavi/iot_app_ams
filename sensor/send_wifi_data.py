@@ -19,13 +19,14 @@ def main():
     eastern = timezone('US/Eastern')
     stats_interval = 10 # How frequent you want to take stats (usually 30)
 
-    #directory = "/usr/src/send_data/" # Uncomment this line when deploying it as Docker image
+    directory = "/usr/src/send_data/" # Uncomment this line when deploying it as Docker image
 
+    """
     # Unblock the following 3 lines when testing the code in-house
     directory = "/home/ubuntu/iot_app_ams/sensor/"
-    os.environ["REST_API_IP"] = "192.168.200.11"
+    os.environ["REST_API_IPS"] = "10.2.1.16,10.2.1.18,10.2.1.19"
     os.environ["REST_API_PORT"] = "6969"
-
+    """
 
     stats_file = directory+"stats.csv" # file to hold stats
     check_delete_file(stats_file) # Remove old file and recreate it
