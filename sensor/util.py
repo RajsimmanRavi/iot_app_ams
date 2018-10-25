@@ -66,10 +66,12 @@ def post_request(url,json_data):
   REST_API_PORT = os.environ["REST_API_PORT"]
 
   IPS = REST_API_IPS.split(",")
-  DEST_IP = random.choice(IPS)
 
   sent = False
   while (sent == False):
+
+    DEST_IP = random.choice(IPS)
+
     try:
       r = requests.post("http://"+str(DEST_IP)+":"+str(REST_API_PORT)+"/"+url, data=json_data)
     except requests.exceptions.RequestException as e:
